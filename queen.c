@@ -3,8 +3,22 @@
 #include <ctype.h>
 #include "pieces.h"
 
-// Função para movimentar a Rainha.
-// A Rainha inicia na posição d1 e pode mover-se horizontalmente, verticalmente ou diagonalmente.
+/* Imprime recursivamente os passos do movimento da Rainha */
+void printQueenStepsRecursive(int steps, const char *verticalDir, const char *horizontalDir) {
+    if (steps <= 0)
+        return;
+    
+    if (verticalDir[0] != '\0' && horizontalDir[0] != '\0')
+        printf("%s, %s\n", verticalDir, horizontalDir);
+    else if (verticalDir[0] != '\0')
+        printf("%s\n", verticalDir);
+    else if (horizontalDir[0] != '\0')
+        printf("%s\n", horizontalDir);
+    
+    printQueenStepsRecursive(steps - 1, verticalDir, horizontalDir);
+}
+
+/* Move a Rainha de d1 para um destino válido */
 void moveQueen(void) {
     const char queenStartCol = 'd';
     const int queenStartRow = 1;
@@ -13,10 +27,9 @@ void moveQueen(void) {
     int validMove = 0;
     char input[100];
 
-    // Solicita e valida a posição de destino da Rainha
     do {
         printf("\nMovimento da Rainha (inicia em d1)\n");
-        printf("Digite a posição de destino para a Rainha (ex: g4): ");
+        printf("Digite a posicao de destino para a Rainha (ex: g4): ");
         if (fgets(input, sizeof(input), stdin) != NULL) {
             if (sscanf(input, " %c%d", &queenDestCol, &queenDestRow) != 2) {
                 queenDestCol = '\0';
@@ -24,19 +37,17 @@ void moveQueen(void) {
             }
             queenDestCol = tolower(queenDestCol);
         }
-        // Verifica os limites do tabuleiro
         if (queenDestCol < 'a' || queenDestCol > 'h' ||
-            queenDestRow < 1 || queenDestRow > 8)
-            printf("\nPosição inválida. As colunas devem estar entre a-h e as linhas entre 1-8.\n\n");
-        else {
+            queenDestRow < 1 || queenDestRow > 8) {
+            printf("\nPosicao invalida. As colunas devem estar entre a-h e as linhas entre 1-8.\n");
+        } else {
             int deltaRow = queenDestRow - queenStartRow;
             int deltaCol = queenDestCol - queenStartCol;
-            // Verifica se o movimento é horizontal, vertical ou diagonal
             if (!((queenDestRow == queenStartRow) || (queenDestCol == queenStartCol) ||
                   (abs(deltaRow) == abs(deltaCol))))
-                printf("\nMovimento inválido. A Rainha deve mover-se horizontalmente, verticalmente ou diagonalmente.\n\n");
+                printf("\nMovimento invalido. A Rainha deve mover-se horizontalmente, verticalmente ou diagonalmente.\n");
             else if (queenDestRow == queenStartRow && queenDestCol == queenStartCol)
-                printf("\nMovimento inválido. A Rainha deve sair de sua posição inicial.\n\n");
+                printf("\nMovimento invalido. A Rainha deve sair de sua posicao inicial.\n");
             else
                 validMove = 1;
         }
@@ -48,7 +59,6 @@ void moveQueen(void) {
     const char *verticalDir = "";
     const char *horizontalDir = "";
 
-    // Define a direção do movimento da Rainha
     if (queenDestRow == queenStartRow) {
         steps = abs(deltaCol);
         horizontalDir = (deltaCol > 0) ? "Direita" : "Esquerda";
@@ -61,14 +71,6 @@ void moveQueen(void) {
         horizontalDir = (deltaCol > 0) ? "Direita" : "Esquerda";
     }
 
-    // Exibe os passos do movimento da Rainha
-    printf("\nMovimentação da Rainha:\n");
-    for (int i = 0; i < steps; i++) {
-        if (verticalDir[0] != '\0' && horizontalDir[0] != '\0')
-            printf("%s, %s\n", verticalDir, horizontalDir);
-        else if (verticalDir[0] != '\0')
-            printf("%s\n", verticalDir);
-        else if (horizontalDir[0] != '\0')
-            printf("%s\n", horizontalDir);
-    }
+    printf("\nMovimentacao da Rainha:\n");
+    printQueenStepsRecursive(steps, verticalDir, horizontalDir);
 }

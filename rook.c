@@ -3,8 +3,15 @@
 #include <ctype.h>
 #include "pieces.h"
 
-// Função para movimentar a Torre.
-// A Torre inicia na posição a1 e move-se apenas na mesma linha ou coluna.
+/* Imprime recursivamente os passos do movimento da Torre */
+void printRookStepsRecursive(int steps, const char *direction) {
+    if (steps <= 0)
+        return;
+    printf("%s\n", direction);
+    printRookStepsRecursive(steps - 1, direction);
+}
+
+/* Move a Torre de a1 para uma posição válida na mesma linha ou coluna */
 void moveRook(void) {
     const char rookStartCol = 'a';
     const int rookStartRow = 1;
@@ -13,10 +20,9 @@ void moveRook(void) {
     int validMove = 0;
     char input[100];
 
-    // Solicita e valida a posição de destino da Torre
     do {
         printf("\nMovimento da Torre (inicia em a1)\n");
-        printf("Digite a posição de destino para a Torre (ex: h1): ");
+        printf("Digite a posicao de destino para a Torre (ex: h1): ");
         if (fgets(input, sizeof(input), stdin) != NULL) {
             if (sscanf(input, " %c%d", &rookDestCol, &rookDestRow) != 2) {
                 rookDestCol = '\0';
@@ -24,33 +30,27 @@ void moveRook(void) {
             }
             rookDestCol = tolower(rookDestCol);
         }
-        // Verifica se a posição está dentro dos limites do tabuleiro
         if (rookDestCol < 'a' || rookDestCol > 'h' ||
             rookDestRow < 1 || rookDestRow > 8)
-            printf("\nPosição inválida. As colunas devem estar entre a-h e as linhas entre 1-8.\n\n");
-        // A Torre deve mover-se apenas se a coluna for igual à inicial ou a linha for igual à inicial
+            printf("\nPosicao invalida. As colunas devem estar entre a-h e as linhas entre 1-8.\n");
         else if (rookDestCol != rookStartCol && rookDestRow != rookStartRow)
-            printf("\nMovimento inválido. A Torre deve mover-se apenas na mesma coluna ou na mesma linha.\n\n");
-        // Verifica se o movimento não é nulo (mantendo a mesma posição)
+            printf("\nMovimento invalido. A Torre deve mover-se apenas na mesma coluna ou na mesma linha.\n");
         else if (rookDestCol == rookStartCol && rookDestRow == rookStartRow)
-            printf("\nMovimento inválido. A Torre deve sair de sua posição inicial.\n\n");
+            printf("\nMovimento invalido. A Torre deve sair de sua posicao inicial.\n");
         else
             validMove = 1;
     } while (!validMove);
 
-    // Define a direção do movimento
-    const char *verticalDir   = (rookDestRow - rookStartRow > 0) ? "Cima" : "Baixo";
-    const char *horizontalDir = (rookDestCol - rookStartCol > 0) ? "Direita" : "Esquerda";
-    int steps = (rookDestCol == rookStartCol)
-                    ? abs(rookDestRow - rookStartRow)
-                    : abs(rookDestCol - rookStartCol);
-
-    // Exibe os passos do movimento da Torre
-    printf("\nMovimentação da Torre:\n");
-    for (int i = 0; i < steps; i++) {
-        if (rookDestCol == rookStartCol)
-            printf("%s\n", verticalDir);
-        else
-            printf("%s\n", horizontalDir);
+    const char *direction;
+    int steps;
+    if (rookDestCol == rookStartCol) {
+        direction = (rookDestRow - rookStartRow > 0) ? "Cima" : "Baixo";
+        steps = abs(rookDestRow - rookStartRow);
+    } else {
+        direction = (rookDestCol - rookStartCol > 0) ? "Direita" : "Esquerda";
+        steps = abs(rookDestCol - rookStartCol);
     }
+
+    printf("\nMovimentacao da Torre:\n");
+    printRookStepsRecursive(steps, direction);
 }
